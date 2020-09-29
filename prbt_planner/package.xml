@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>prbt_planner</name>
+  <version>0.0.0</version>
+  <description>The prbt_planner package</description>
+  
+  <maintainer email="davideferr@unimore.it">Davide Ferrari</maintainer>
+
+  <license>BSD-3</license>
+  
+  <buildtool_depend>catkin</buildtool_depend>
+  
+  <depend>roscpp</depend>
+  <depend>std_msgs</depend>
+
+  <build_depend>message_generation</build_depend>
+  <exec_depend>message_runtime</exec_depend>	
+
+  <depend>dynamic_planner</depend>
+  <depend>robot_bridge</depend>
+
+  <depend>visualization_msgs</depend>
+  <depend>pluginlib</depend>
+	<depend>moveit_core</depend>
+  <depend>moveit_ros_planning_interface</depend>
+  <depend>moveit_ros_perception</depend>
+  <build_depend>eigen</build_depend>
+  <depend>interactive_markers</depend>
+	<depend>moveit_visual_tools</depend>
+  <depend>pcl_ros</depend>
+  <depend>pcl_conversions</depend>
+  <depend>rosbag</depend>
+  <depend>tf2_ros</depend>
+  <depend>tf2_eigen</depend>
+  <depend>tf2_geometry_msgs</depend>
+
+	<build_depend>geometric_shapes</build_depend>
+
+	<exec_depend>moveit_commander</exec_depend>
+  <exec_depend>moveit_fake_controller_manager</exec_depend>
+  <exec_depend>joy</exec_depend>
+
+</package>
