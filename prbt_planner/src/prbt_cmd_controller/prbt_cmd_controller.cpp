@@ -2,8 +2,13 @@
 
 controller_functions::controller_functions() {
 
-    //Service Clients
-    
+    // Usage of Dynamic Planner or Pilz poin Interpolation
+    nh.param("/prbt_cmd_controller_Node/use_dynamic_planner", use_dynamic_planner, true);
+
+    // Trajectory Publisher
+    prbt_Planned_Trajectory_publisher = nh.advertise<trajectory_msgs::JointTrajectory>("/Robot_Bridge/prbt_Planned_Trajectory", 1000);
+
+    // Service Clients
     plan_joint_space_client = nh.serviceClient<prbt_planner::PlanJointSpace>("/prbt_planner/plan_joint_space_service");
     plan_cartesian_space_client = nh.serviceClient<prbt_planner::PlanCartesianSpace>("/prbt_planner/plan_cartesian_space_service");
     set_planner_parameters_client = nh.serviceClient<prbt_planner::SetPlannerParameters>("/prbt_planner/set_planner_parameters_service");
@@ -22,7 +27,7 @@ controller_functions::controller_functions() {
 
 void controller_functions::prbt_Planning_Request (void) {
 
-    std::cout << "\nStart Planning [cm] \n\n" << "Insert Joint Position (6 Joints):\n\n";
+    std::cout << "\n -- Start Planning -- \n\n" << "Insert Joint Position (6 Joints):\n\n";
     std::cin >> joint_position[0];
 
     if (joint_position[0] == 999) {
@@ -36,14 +41,22 @@ void controller_functions::prbt_Planning_Request (void) {
         std::cin >> joint_position[1] >> joint_position[2] >> joint_position[3] >> joint_position[4] >> joint_position[5];
         std::cout << "\n";
 
-        // std::cout << "Insert Movement Time: ";
-        // time = 1;
-        // std::cin >> time;
+        if (use_dynamic_planner) {
 
-        std::cout << "Insert Velocity and Acceleration: ";
-        std::cin >> set_planner_dynamics_srv.request.v_factor;
-        std::cin >> set_planner_dynamics_srv.request.a_factor;
-        std::cout << "\n";
+            std::cout << "Insert Velocity: ";
+            std::cin >> set_planner_dynamics_srv.request.v_factor;
+            std::cout << "Insert Acceleration: ";
+            std::cin >> set_planner_dynamics_srv.request.a_factor;
+            std::cout << "\n";
+
+        } else {
+
+            std::cout << "Insert Movement Time: ";
+            time = 1;
+            std::cin >> time;
+            std::cout << "\n";
+        
+        }
     
     }
  
@@ -51,24 +64,35 @@ void controller_functions::prbt_Planning_Request (void) {
 
 void controller_functions::prbt_Plan (void) {
 
+    if (use_dynamic_planner) {
 
-    // planned_trajectory.joint_names = {"prbt_joint_1", "prbt_joint_2", "prbt_joint_3", "prbt_joint_4", "prbt_joint_5", "prbt_joint_6"};
-    // planned_trajectory.points.resize(1);
-    // planned_trajectory.points[0].positions = {joint_position[0], joint_position[1], joint_position[2], joint_position[3], joint_position[4], joint_position[5]};
-    // planned_trajectory.points[0].time_from_start = ros::Duration(time);
-
-    // ROS_INFO("Movement Time (%.2f)", time);
-
-    // Setting Planner Dynamics   
-    if (set_planner_dynamics_client.call(set_planner_dynamics_srv)) {ROS_INFO("Manipulator Dynamic Changed Succesfully! Velocity: %.2f Acceleration: %.2f", set_planner_dynamics_srv.request.v_factor, set_planner_dynamics_srv.request.a_factor);}
-    else {ROS_ERROR("Failed to Call Service: \"SetPlannerDynamic\"");}
+        // Setting Planner Dynamics   
+        if (set_planner_dynamics_client.call(set_planner_dynamics_srv)) {ROS_INFO("Manipulator Dynamic Changed Succesfully! Velocity: %.2f Acceleration: %.2f", set_planner_dynamics_srv.request.v_factor, set_planner_dynamics_srv.request.a_factor);}
+        else {ROS_ERROR("Failed to Call Service: \"SetPlannerDynamic\"");}
+        
+        // Calling Joint Space Planning Service
+        plan_joint_space_srv.request.final_position = joint_position;
+        plan_joint_space_srv.request.send = true;
+        
+        if (plan_joint_space_client.call(plan_joint_space_srv)) {ROS_INFO("PRBT GOTO (%.2f;%.2f;%.2f;%.2f;%.2f;%.2f)", joint_position[0], joint_position[1], joint_position[2], joint_position[3], joint_position[4], joint_position[5]);}
+        else {ROS_ERROR("Failed to Call Service: \"PlanJointSpace\"");}
     
-    // Calling Joint Space Planning Service
-    plan_joint_space_srv.request.final_position = joint_position;
-    plan_joint_space_srv.request.send = true;
+    } else {
+
+        planned_trajectory.joint_names = {"prbt_joint_1", "prbt_joint_2", "prbt_joint_3", "prbt_joint_4", "prbt_joint_5", "prbt_joint_6"};
+        planned_trajectory.points.resize(1);
+        planned_trajectory.points[0].positions = {joint_position[0], joint_position[1], joint_position[2], joint_position[3], joint_position[4], joint_position[5]};
+        planned_trajectory.points[0].time_from_start = ros::Duration(time);
+
+        ROS_INFO("PRBT GOTO (%.2f;%.2f;%.2f;%.2f;%.2f;%.2f)", joint_position[0], joint_position[1], joint_position[2], joint_position[3], joint_position[4], joint_position[5]);
+        ROS_INFO("Movement Time (%.2f)", time);
+
+        prbt_Planned_Trajectory_publisher.publish(planned_trajectory);
+
+    }
     
-    if (plan_joint_space_client.call(plan_joint_space_srv)) {ROS_INFO("PRBT GOTO (%.2f;%.2f;%.2f;%.2f;%.2f;%.2f)", joint_position[0], joint_position[1], joint_position[2], joint_position[3], joint_position[4], joint_position[5]);}
-    else {ROS_ERROR("Failed to Call Service: \"PlanJointSpace\"");}
+
+    
 
 }
 

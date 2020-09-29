@@ -37,6 +37,7 @@ class controller_functions {
     private:
 
         ros::NodeHandle nh;
+        ros::Publisher prbt_Planned_Trajectory_publisher;
 
         ros::ServiceClient plan_joint_space_client;
         ros::ServiceClient plan_cartesian_space_client;
@@ -60,6 +61,8 @@ class controller_functions {
 
         std::vector<double> joint_position;
         float time;
+
+        bool use_dynamic_planner = false;
 
         void prbt_Planning_Request (void);
         void prbt_Plan (void);
