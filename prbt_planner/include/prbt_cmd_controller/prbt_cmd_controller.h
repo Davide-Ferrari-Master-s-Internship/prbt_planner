@@ -31,6 +31,7 @@ class controller_functions {
     public:
 
         controller_functions();
+        ~controller_functions();
         
         void spinner();
 

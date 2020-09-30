@@ -9,7 +9,7 @@ dynamic_planner::dynamic_planner(std::string manipulator_name, std::vector<std::
     visual_tools->trigger();
 
     joint_pub =  n.advertise<sensor_msgs::JointState>("/move_group/fake_controller_joint_states", 1000, true);
-    trajectory_pub = n.advertise<trajectory_msgs::JointTrajectory>("/Robot_Bridge/prbt_Planned_Trajectory", 1000, true);
+    trajectory_pub = n.advertise<trajectory_msgs::JointTrajectory>("/Robot_Bridge/prbt_Planned_Trajectory", 1, true);
     stop_pub = n.advertise<std_msgs::Bool>("/stop", 1, true);
     
     trajpoint_sub =  n.subscribe("/Robot_Bridge/prbt_Trajectory_Counter", 2, &dynamic_planner::TrajPointCallback, this);

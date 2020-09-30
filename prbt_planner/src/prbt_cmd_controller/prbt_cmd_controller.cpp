@@ -6,7 +6,7 @@ controller_functions::controller_functions() {
     nh.param("/prbt_cmd_controller_Node/use_dynamic_planner", use_dynamic_planner, true);
 
     // Trajectory Publisher
-    prbt_Planned_Trajectory_publisher = nh.advertise<trajectory_msgs::JointTrajectory>("/Robot_Bridge/prbt_Planned_Trajectory", 1000);
+    prbt_Planned_Trajectory_publisher = nh.advertise<trajectory_msgs::JointTrajectory>("/Robot_Bridge/prbt_Planned_Trajectory", 1);
 
     // Service Clients
     plan_joint_space_client = nh.serviceClient<prbt_planner::PlanJointSpace>("/prbt_planner/plan_joint_space_service");
@@ -22,6 +22,12 @@ controller_functions::controller_functions() {
     set_planner_dynamics_srv.request.a_factor = 0.5;
 
     joint_position.resize(6);
+
+}
+
+controller_functions::~controller_functions() {
+
+    std::terminate();
 
 }
 
@@ -90,9 +96,6 @@ void controller_functions::prbt_Plan (void) {
         prbt_Planned_Trajectory_publisher.publish(planned_trajectory);
 
     }
-    
-
-    
 
 }
 

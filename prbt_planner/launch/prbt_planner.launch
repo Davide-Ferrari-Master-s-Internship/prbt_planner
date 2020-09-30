@@ -10,7 +10,7 @@
 	<node pkg="prbt_planner" type="prbt_planner_Node" name="prbt_planner_Node" output="log">
     <param name="planning_plugin" value="$(arg planning_plugin)"/>
     <param name="request_adapters" value="$(arg planning_adapters)"/>
-    <param name="sample_duration" value="0.1"/>
+    <param name="sample_duration" value="0.01"/>
     <rosparam command="load" file="$(find prbt_moveit_config)/config/ompl_planning.yaml"/>
 	</node>
 
