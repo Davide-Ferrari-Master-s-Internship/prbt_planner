@@ -27,7 +27,7 @@ controller_functions::controller_functions() {
 
 controller_functions::~controller_functions() {
 
-    std::terminate();
+    // std::terminate();
 
 }
 
