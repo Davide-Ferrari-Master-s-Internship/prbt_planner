@@ -4,7 +4,7 @@
   	<arg name="use_dynamic_planner" default="true" />
 
 	<!--	prbt planner Node	-->
-	<include file="$(find prbt_planner)/launch/prbt_planner.launch"/>
+	<include if="$(arg use_dynamic_planner)" file="$(find prbt_planner)/launch/prbt_planner.launch"/>
 
 	<!--	prbt cmd controller Node	-->
 	<node pkg="prbt_planner" type="prbt_cmd_controller_Node" name="prbt_cmd_controller_Node" output="screen">

@@ -1,0 +1,6 @@
+<launch>
+
+	<!--	ur10e cmd controller Node	-->
+	<node pkg="ur_planner" type="ur10e_cmd_controller_Node" name="ur10e_cmd_controller_Node" output="screen"/>
+
+</launch>
